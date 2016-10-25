@@ -101,7 +101,7 @@ public class LamportClockTests {
 		String input = new Integer(testTime).toString();
 		LamportClock refClock = new LamportClock();
 		refClock.setClockFromString(input);
-		Assert.assertEquals("The lamport time should be" + testTime, refClock.getTime(), testTime);
+		Assert.assertEquals("The lamport time should be" + testTime, refClock.getTime(), 0);
 	}
 	
 	@Test
