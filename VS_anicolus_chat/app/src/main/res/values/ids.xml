@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="settingsButton" type="id" />
+    <item name="joinButton" type="id" />
+    <item name="settingsTitle" type="id" />
+    <item name="serverAddress" type="id" />
+    <item name="okServerAddress" type="id" />
+    <item name="serverPort" type="id" />
+    <item name="okServerPort" type="id" />
+    <item name="connectedServer" type="id" />
+    <item name="username" type="id" />
+</resources>
