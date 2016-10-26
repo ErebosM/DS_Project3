@@ -90,7 +90,6 @@ public class VectorClock implements Clock {
                 }
             }
         }
-        String test = cl.vector.toString();
         if(valid) {
             setClock(cl);
         }
