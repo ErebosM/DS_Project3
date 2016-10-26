@@ -33,4 +33,10 @@
         android:layout_below="@+id/username"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@id/connectionStatus"
+        android:layout_below="@id/joinButton"/>
+
 </RelativeLayout>

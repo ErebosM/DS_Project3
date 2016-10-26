@@ -9,4 +9,5 @@
     <item name="okServerPort" type="id" />
     <item name="connectedServer" type="id" />
     <item name="username" type="id" />
+    <item name="connectionStatus" type="id" />
 </resources>
