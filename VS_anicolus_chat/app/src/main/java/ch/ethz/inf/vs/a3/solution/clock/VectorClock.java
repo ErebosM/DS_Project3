@@ -1,5 +1,8 @@
 package ch.ethz.inf.vs.a3.solution.clock;
 
+
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,14 +62,38 @@ public class VectorClock implements Clock {
     @Override
     public void setClockFromString(String clock) {
         VectorClock cl = new VectorClock();
-        String s = clock.substring(1, clock.length()-1);
-        String[] pairs = s.split(",");
-        for (int i=0;i<pairs.length;i++) {
-            String pair = pairs[i];
-            String[] keyValue = pair.split(":");
-            cl.addProcess(Integer.valueOf(keyValue[0].substring(1, keyValue[0].length()-1)), Integer.valueOf(keyValue[1]));
+        boolean valid = true;
+        if (clock.length() > 2) {
+            String s = clock.substring(1, clock.length() - 1);
+            String[] pairs = s.split(",");
+            for (int i = 0; i < pairs.length; i++) {
+                String pair = pairs[i];
+                String[] keyValue = pair.split(":");
+                boolean status1 = true;
+                for (int j = 1; j <= keyValue[0].length() - 2; j++) {
+                    char c = keyValue[0].charAt(j);
+                    if (!Character.isDigit(c)) {
+                        status1 = false;
+                    }
+                }
+                boolean status2 = true;
+                for (int j = 0; j <= keyValue[1].length()-1; j++) {
+                    char c = keyValue[1].charAt(j);
+                    if (!Character.isDigit(c)) {
+                        status2 = false;
+                    }
+                }
+                if (status1 && status2) {
+                    cl.addProcess(Integer.valueOf(keyValue[0].substring(1, keyValue[0].length() - 1)), Integer.valueOf(keyValue[1]));
+                } else {
+                    valid = false;
+                }
+            }
         }
-        update(cl);
+        String test = cl.vector.toString();
+        if(valid) {
+            setClock(cl);
+        }
     }
 
     @Override
@@ -80,6 +107,9 @@ public class VectorClock implements Clock {
             stringBuilder.append(":");
             stringBuilder.append(entry.getValue());
             stringBuilder.append(",");
+        }
+        if(vector.entrySet().size() > 0) {
+            stringBuilder.deleteCharAt(stringBuilder.length()-1);
         }
         stringBuilder.append("}");
         return stringBuilder.toString();
