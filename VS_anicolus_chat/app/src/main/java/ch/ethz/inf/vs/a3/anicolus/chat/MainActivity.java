@@ -27,6 +27,7 @@ import java.net.UnknownHostException;
 import java.util.UUID;
 
 import ch.ethz.inf.vs.a3.message.MessageTypes;
+import ch.ethz.inf.vs.a3.solution.clock.VectorClock;
 import ch.ethz.inf.vs.a3.solution.message.Message;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         try {
-            serverAddress = InetAddress.getByName("192.168.0.241");
+            serverAddress = InetAddress.getByName("192.168.56.1");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 // prepare register message and send it as DatagramPacket
                                 uuid = UUID.randomUUID();
-                                Message register = new Message(username, uuid, MessageTypes.REGISTER);
+                                Message register = new Message(username, uuid, MessageTypes.REGISTER, null, "");
                                 String msg = register.getJSONObject().toString();
                                 byte[] b = msg.getBytes();
                                 DatagramPacket toSend = new DatagramPacket(b, b.length, serverAddress, serverPort);
