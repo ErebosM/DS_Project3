@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.SocketException;
 import java.util.PriorityQueue;
 import java.util.UUID;
 
@@ -92,31 +93,27 @@ public class ChatActivity extends AppCompatActivity {
                 }
 
 
-                // prepare to receive message from the server
-                //TODO wait for server to finish sending
-                for (int i = 0; i < 7; i++) {
-                    byte[] c = new byte[1500];
-                    DatagramPacket toRecv = new DatagramPacket(c, c.length, MainActivity.socket.getLocalAddress(), MainActivity.socket.getLocalPort());
-                    try {
+                // prepare to receive message from the server, read packets and put them into the queue
+                try {
+                    MainActivity.socket.setSoTimeout(100);
+                    while (true) {
+                        byte[] c = new byte[1500];
+                        DatagramPacket toRecv = new DatagramPacket(c, c.length, MainActivity.socket.getLocalAddress(), MainActivity.socket.getLocalPort());
                         MainActivity.socket.receive(toRecv);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-
                         JSONObject o = new JSONObject(new String(toRecv.getData()));
-
                         Message me = convertJSONToMessage(o);
-
                         messagequeue.add(me);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+
                 }
-
-
             }
+
+
+
+
         };
         t.start();
 
