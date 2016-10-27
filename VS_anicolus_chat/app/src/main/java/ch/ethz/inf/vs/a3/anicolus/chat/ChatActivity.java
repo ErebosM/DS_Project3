@@ -41,10 +41,12 @@ public class ChatActivity extends AppCompatActivity {
                 " as " + MainActivity.username + ".");
 
 
+        chatbox = (EditText) findViewById(R.id.chatlog);
         Button getlog = (Button) findViewById(R.id.getlog);
         getlog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                chatbox.setText("Chat Log:");
                 retrieveLog();
             }
         });
@@ -75,10 +77,6 @@ public class ChatActivity extends AppCompatActivity {
 
     protected void retrieveLog() {
 
-
-        System.out.println("in");
-        chatbox = (EditText) findViewById(R.id.chatlog);
-
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -93,12 +91,10 @@ public class ChatActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                System.out.println("Sent");
-
 
                 // prepare to receive message from the server
                 //TODO wait for server to finish sending
-                for (int i = 0; i <7; i++) {
+                for (int i = 0; i < 7; i++) {
                     byte[] c = new byte[1500];
                     DatagramPacket toRecv = new DatagramPacket(c, c.length, MainActivity.socket.getLocalAddress(), MainActivity.socket.getLocalPort());
                     try {
@@ -108,14 +104,11 @@ public class ChatActivity extends AppCompatActivity {
                     }
 
                     try {
-                        System.out.println("1");
+
                         JSONObject o = new JSONObject(new String(toRecv.getData()));
-                        System.out.println("2");
-                        System.out.println(o);
-                        System.out.println("3");
+
                         Message me = convertJSONToMessage(o);
-                        System.out.println("converted to" + me.getJSONObject());
-                        System.out.println("4");
+
                         messagequeue.add(me);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -134,12 +127,11 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
-        System.out.println("Message queue contains " + messagequeue.size() + " elements");
-
-        for (int i = 0; i < messagequeue.size()+6; i++) {
+        int size = messagequeue.size();
+        for (int i = 0; i < size; i++) {
             try {
                 chatbox.setText(chatbox.getText() + "\n" + messagequeue.poll().getJSONObject().get("body").toString());
-                System.out.println("added to view");
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -149,16 +141,15 @@ public class ChatActivity extends AppCompatActivity {
 
     protected Message convertJSONToMessage(JSONObject json) {
 
-        System.out.println("-----begin converting-------------");
+
         try {
             String username = (String) (((JSONObject) json.get("header")).get("username"));
             String type = (String) (((JSONObject) json.get("header")).get("type"));
             String timestamp = (String) (((JSONObject) json.get("header")).get("timestamp"));
-            String body = json.get("body").toString();
+            String body = (String) (((JSONObject) json.get("body")).get("content"));
+            // String body = json.get("body").toString();
             VectorClock c = new VectorClock();
             c.setClockFromString(timestamp);
-            //TODO shouldn't these values be the same?
-            System.out.println("-x-x-x-x-x-x-x The timestamp is: " + "|"+timestamp+"|" + " and " + c.toString());
 
             //TODO pass correct UUID
             return new Message(username, MainActivity.uuid, type, c, body);

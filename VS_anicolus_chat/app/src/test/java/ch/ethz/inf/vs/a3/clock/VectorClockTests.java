@@ -265,4 +265,5 @@ public class VectorClockTests {
 		Assert.assertEquals(refClock.toString(), "{\"0\":71,\"1\":70,\"2\":5}");
 	}
 
+
 }

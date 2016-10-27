@@ -24,7 +24,9 @@
         android:id="@+id/chatlog"
         android:layout_below="@+id/connectedServer"
         android:layout_alignParentStart="true"
-        android:text="Chat log" />
+        android:text="Chat log"
+        android:gravity="top|left"
+        style="@style/Widget.AppCompat.AutoCompleteTextView" />
 
     <Button
         android:text="retrieve Chatlog"
