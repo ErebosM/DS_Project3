@@ -1,5 +1,6 @@
 package ch.ethz.inf.vs.a3.anicolus.chat;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,7 @@ import ch.ethz.inf.vs.a3.message.MessageTypes;
 import ch.ethz.inf.vs.a3.solution.clock.VectorClock;
 import ch.ethz.inf.vs.a3.solution.message.Message;
 
+import static android.R.id.checkbox;
 import static android.R.id.message;
 import static ch.ethz.inf.vs.a3.anicolus.chat.MainActivity.registered;
 import static ch.ethz.inf.vs.a3.anicolus.chat.MainActivity.socket;
@@ -30,6 +32,9 @@ public class ChatActivity extends AppCompatActivity {
 
     PriorityQueue<Message> messagequeue = new PriorityQueue<Message>(20, new MessageComparator());
     EditText chatbox;
+    Button getlog;
+    boolean clicked;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
         chatbox = (EditText) findViewById(R.id.chatlog);
-        Button getlog = (Button) findViewById(R.id.getlog);
+        getlog = (Button) findViewById(R.id.getlog);
         getlog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,10 +82,18 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     protected void retrieveLog() {
-
         Thread t = new Thread() {
             @Override
             public void run() {
+                Handler h = getlog.getHandler();
+                if (h == null)
+                    return;
+                h.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        getlog.setEnabled(false);
+                    }
+                });
                 //Send request to retrieve chat log from server
                 Message register = new Message(MainActivity.username, MainActivity.uuid, MessageTypes.RETRIEVE_CHAT_LOG, null, "");
                 String msg = register.getJSONObject().toString();
@@ -95,7 +108,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 // prepare to receive message from the server, read packets and put them into the queue
                 try {
-                    MainActivity.socket.setSoTimeout(100);
+                    MainActivity.socket.setSoTimeout(1000);
                     while (true) {
                         byte[] c = new byte[1500];
                         DatagramPacket toRecv = new DatagramPacket(c, c.length, MainActivity.socket.getLocalAddress(), MainActivity.socket.getLocalPort());
@@ -109,30 +122,31 @@ public class ChatActivity extends AppCompatActivity {
                     e.printStackTrace();
 
                 }
+                int size = messagequeue.size();
+                for (int i = 0; i < size; i++) {
+                    h.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                chatbox.setText(chatbox.getText() + "\n" + messagequeue.poll().getJSONObject().get("body").toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+                h.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        getlog.setEnabled(true);
+                    }
+                });
             }
-
-
 
 
         };
         t.start();
 
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        int size = messagequeue.size();
-        for (int i = 0; i < size; i++) {
-            try {
-                chatbox.setText(chatbox.getText() + "\n" + messagequeue.poll().getJSONObject().get("body").toString());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
 
     }
 

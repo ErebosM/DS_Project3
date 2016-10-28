@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         try {
-            serverAddress = InetAddress.getByName("192.168.56.1");
+            serverAddress = InetAddress.getByName("10.2.38.47");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
