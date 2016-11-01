@@ -3,6 +3,7 @@ package ch.ethz.inf.vs.a3.clock;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.ethz.inf.vs.a3.queue.PriorityQueue;
 import ch.ethz.inf.vs.a3.solution.clock.VectorClock;
 
 public class VectorClockTests {
@@ -47,7 +48,7 @@ public class VectorClockTests {
 				testTimes[testPid] + 1, testClock.getTime(testPid));
 		for (int i = 1; i < testTimes.length; i++) {
 			Assert.assertEquals("Time not at pid " + testPid
-					+ " should be preserved.", testTimes[i],
+							+ " should be preserved.", testTimes[i],
 					testClock.getTime(i));
 		}
 	}
@@ -85,17 +86,17 @@ public class VectorClockTests {
 		refClock.update(newClock);
 		for (int i = 0; i < refTimes.length; i++) {
 			Assert.assertEquals("Time for pid " + i
-					+ " should be taken from own vector.", refTimes[i],
+							+ " should be taken from own vector.", refTimes[i],
 					refClock.getTime(i));
 		}
 		for (int i = 0; i < refTimes.length; i++) {
 			int newPid = i + 3;
 			Assert.assertEquals("Time for pid " + newPid
-					+ " should be taken from new vector.", newTimes[i],
+							+ " should be taken from new vector.", newTimes[i],
 					refClock.getTime(newPid));
 		}
 	}
-	
+
 	@Test
 	public void compareWithLaterEventSamePids() {
 		int[] refTimes = { 71, 70, 1 };
@@ -108,7 +109,7 @@ public class VectorClockTests {
 		}
 		Assert.assertFalse(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void compareWithParallelEventSamePids() {
 		int[] refTimes = { 71, 70, 1 };
@@ -121,7 +122,7 @@ public class VectorClockTests {
 		}
 		Assert.assertFalse(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void compareWithEarlierEventSamePids() {
 		int[] refTimes = { 71, 70, 1 };
@@ -134,7 +135,7 @@ public class VectorClockTests {
 		}
 		Assert.assertTrue(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void compareWithLaterEventMissingPids() {
 		int[] refTimes = { 71, 70, 1 };
@@ -148,7 +149,7 @@ public class VectorClockTests {
 		}
 		Assert.assertFalse(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void compareWithParallelEventMissingPids() {
 		int[] refTimes = { 71, 70, 1 };
@@ -162,7 +163,7 @@ public class VectorClockTests {
 		}
 		Assert.assertFalse(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void compareWithEarlierEventMissingPids() {
 		int[] refTimes = { 71, 70, 1 };
@@ -176,7 +177,7 @@ public class VectorClockTests {
 		}
 		Assert.assertTrue(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void compareWithLaterEventMissingEvents() {
 		int[] refTimes = { 71, 70, 5 };
@@ -189,7 +190,7 @@ public class VectorClockTests {
 		}
 		Assert.assertFalse(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void compareWithParallelEventMissingEvents() {
 		int[] refTimes = { 71, 70, 5 };
@@ -202,7 +203,7 @@ public class VectorClockTests {
 		}
 		Assert.assertFalse(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void compareWithEarlierEventMissingEvents() {
 		int[] refTimes = { 71, 70, 5 };
@@ -215,13 +216,13 @@ public class VectorClockTests {
 		}
 		Assert.assertTrue(incomingClock.happenedBefore(refClock));
 	}
-	
+
 	@Test
 	public void convertEmptyClockToString() {
 		VectorClock refClock = new VectorClock();
 		Assert.assertEquals(refClock.toString(), "{}");
 	}
-	
+
 	@Test
 	public void convertClockToString() {
 		int[] refTimes = { 71, 70, 5 };
@@ -231,7 +232,7 @@ public class VectorClockTests {
 		}
 		Assert.assertEquals(refClock.toString(), "{\"0\":71,\"1\":70,\"2\":5}");
 	}
-	
+
 	@Test
 	public void convertEmptyStringToClock() {
 		int[] refTimes = { 71, 70, 5 };
@@ -242,28 +243,103 @@ public class VectorClockTests {
 		refClock.setClockFromString("{}");
 		Assert.assertEquals(refClock.toString(), "{}");
 	}
-	
+
 	@Test
 	public void convertCorrectStringToClock() {
 		int[] refTimes = { 71, 70, 5 };
 		VectorClock refClock = new VectorClock();
 		for (int i = 0; i < refTimes.length; i++) {
 			refClock.addProcess(i, refTimes[i]);
-		}	
+		}
 		refClock.setClockFromString("{\"0\":1,\"1\":2,\"2\":3}");
 		Assert.assertEquals(refClock.toString(), "{\"0\":1,\"1\":2,\"2\":3}");
 	}
-	
+
 	@Test
 	public void convertIncorrectStringToClock() {
 		int[] refTimes = { 71, 70, 5 };
 		VectorClock refClock = new VectorClock();
 		for (int i = 0; i < refTimes.length; i++) {
 			refClock.addProcess(i, refTimes[i]);
-		}		
+		}
 		refClock.setClockFromString("{\"0\":1,\"1\":TT,\"2\":3}");
 		Assert.assertEquals(refClock.toString(), "{\"0\":71,\"1\":70,\"2\":5}");
 	}
 
+	@Test
+	public void testClockSortingOne() {
+		VectorClock a = new VectorClock();
+		a.addProcess(0, 1);
+		a.addProcess(1, 0);
 
+		VectorClock b = new VectorClock();
+		b.addProcess(0, 2);
+		b.addProcess(1, 0);
+
+		VectorClock c = new VectorClock();
+		c.addProcess(0, 0);
+		c.addProcess(1, 1);
+
+		VectorClock d = new VectorClock();
+		d.addProcess(0, 0);
+		d.addProcess(1, 2);
+
+		PriorityQueue<VectorClock> priorityQueue = new PriorityQueue<VectorClock>(new VectorClockComparator());
+		priorityQueue.add(d);
+		priorityQueue.add(a);
+		priorityQueue.add(b);
+		priorityQueue.add(c);
+
+		Assert.assertEquals(priorityQueue.toString(), "[{\"0\":0,\"1\":1}, {\"0\":0,\"1\":2}, {\"0\":1,\"1\":0}, {\"0\":2,\"1\":0}]");
+	}
+
+	@Test
+	public void testClockSortingTwo() {
+		VectorClock a1 = new VectorClock();
+		a1.addProcess(0, 1);
+		a1.addProcess(1, 0);
+		a1.addProcess(2, 0);
+
+		VectorClock a2 = new VectorClock();
+		a2.addProcess(0, 1);
+		a2.addProcess(1, 1);
+		a2.addProcess(2, 0);
+
+		VectorClock a3 = new VectorClock();
+		a3.addProcess(0, 3);
+		a3.addProcess(1, 2);
+		a3.addProcess(2, 0);
+
+		VectorClock b1 = new VectorClock();
+		b1.addProcess(0, 1);
+		b1.addProcess(1, 2);
+		b1.addProcess(2, 0);
+
+		VectorClock b2 = new VectorClock();
+		b2.addProcess(0, 4);
+		b2.addProcess(1, 2);
+		b2.addProcess(2, 0);
+
+		VectorClock c1 = new VectorClock();
+		c1.addProcess(0, 2);
+		c1.addProcess(1, 0);
+		c1.addProcess(2, 0);
+
+		VectorClock c2 = new VectorClock();
+		c2.addProcess(0, 2);
+		c2.addProcess(1, 3);
+		c2.addProcess(2, 0);
+
+		PriorityQueue<VectorClock> priorityQueue = new PriorityQueue<VectorClock>(new VectorClockComparator());
+		priorityQueue.add(a1);
+		priorityQueue.add(a2);
+		priorityQueue.add(a3);
+		priorityQueue.add(b1);
+		priorityQueue.add(b2);
+		priorityQueue.add(c1);
+		priorityQueue.add(c2);
+
+		Assert.assertEquals(priorityQueue.toString(), "[{\"0\":1,\"1\":0,\"2\":0}, {\"0\":1,\"1\":1,\"2\":0}, {\"0\":1,\"1\":2,\"2\":0}, " +
+				"{\"0\":2,\"1\":0,\"2\":0}, {\"0\":3,\"1\":2,\"2\":0}, {\"0\":4,\"1\":2,\"2\":0}, {\"0\":2,\"1\":3,\"2\":0}]");
+	}
 }
