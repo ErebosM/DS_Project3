@@ -1,3 +1,5 @@
 1. Vector clocks, contrary to Lamport clock, also fulfills the strong clock consistency condition.
 2. -if ex is a send event and ey is the recieve event of the same message then ex => ey
    -if ex => ey and ey => ez, then ex => ez
+3. It happens before. If you do it afterwards it's possible that another message arrives before the clock is incremented and that can result in an inconsistent state.
+
