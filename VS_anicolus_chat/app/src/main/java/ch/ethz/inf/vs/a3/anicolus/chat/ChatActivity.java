@@ -33,7 +33,7 @@ public class ChatActivity extends AppCompatActivity {
     PriorityQueue<Message> messagequeue = new PriorityQueue<Message>(20, new MessageComparator());
     EditText chatbox;
     Button getlog;
-    boolean clicked;
+  
 
 
     @Override
