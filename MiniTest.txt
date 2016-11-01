@@ -1,0 +1,2 @@
+3. It happens before. If you do it afterwards it's possible that another message arrives before the clock is incremented and that can result in an inconsistent state.
+
