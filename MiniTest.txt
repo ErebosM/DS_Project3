@@ -1,2 +1,5 @@
 3. It happens before. If you do it afterwards it's possible that another message arrives before the clock is incremented and that can result in an inconsistent state.
 
+
+5.	Vector clocks are designed under the assumtion that there is an constant amount of processes and you have to know the number of processes in advantage.
+	Today, in most distributed applications you need vector clocks which can grow dynamicly. In the paper they proposed dynamic vector clock which can overcome these disadvantages.
