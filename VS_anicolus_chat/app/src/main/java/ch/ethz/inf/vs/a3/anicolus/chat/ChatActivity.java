@@ -30,10 +30,10 @@ import static ch.ethz.inf.vs.a3.anicolus.chat.MainActivity.socket;
 
 public class ChatActivity extends AppCompatActivity {
 
-    PriorityQueue<Message> messagequeue = new PriorityQueue<Message>(20, new MessageComparator());
+    ch.ethz.inf.vs.a3.queue.PriorityQueue<Message> messagequeue = new ch.ethz.inf.vs.a3.queue.PriorityQueue<>(new MessageComparator());
     EditText chatbox;
     Button getlog;
-  
+
 
 
     @Override
