@@ -65,20 +65,24 @@ public class ChatActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d("onDestroy", "called");
         // prepare deregister message and send it as DatagramPacket
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Message deregister = new Message(MainActivity.username, MainActivity.uuid, MessageTypes.DEREGISTER, null, "");
-                String msg = deregister.getJSONObject().toString();
-                byte[] b = msg.getBytes();
-                DatagramPacket toSend = new DatagramPacket(b, b.length, MainActivity.serverAddress, MainActivity.serverPort);
-                try {
-                    socket.send(toSend);
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if (isFinishing()) { // Application is terminated.
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Message deregister = new Message(MainActivity.username, MainActivity.uuid, MessageTypes.DEREGISTER, null, "");
+                    String msg = deregister.getJSONObject().toString();
+                    byte[] b = msg.getBytes();
+                    DatagramPacket toSend = new DatagramPacket(b, b.length, MainActivity.serverAddress, MainActivity.serverPort);
+                    try {
+                        socket.send(toSend);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        } else { // Orientation changes.
+            // Do nothing here, keep registration.
+        }
     }
 
     protected void retrieveLog() {

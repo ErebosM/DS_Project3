@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         try {
-            serverAddress = InetAddress.getByName("10.2.38.47");
+            // Set default value for Server IP address.
+            serverAddress = InetAddress.getByName("192.168.0.241");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                                 // Show status of connection establishment on MainActivity.
                                 update (status, "Trying to establish connection..." + i);
                                 socket = new DatagramSocket();
-                                socket.setSoTimeout(5000);
+                                socket.setSoTimeout(20000);
 
                                 // prepare register message and send it as DatagramPacket
                                 uuid = UUID.randomUUID();
@@ -122,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
                                 byte[] c = new byte[1500];
                                 DatagramPacket toRecv = new DatagramPacket(c, c.length, socket.getLocalAddress(), socket.getLocalPort());
                                 socket.receive(toRecv);
+
+                                Log.d("received", new String(toRecv.getData()));
 
                                 // check that the server responded with an ack
                                 JSONObject o = new JSONObject(new String(toRecv.getData()));
